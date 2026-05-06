@@ -9,7 +9,14 @@
 > This documentation was AI-generated
 
 Complete observability stack for Claude Code (metrics, logs/events and traces) based on **Grafana Alloy** (OpenTelemetry collector), **Grafana Mimir** (metrics), **Loki**, **Tempo** and **Grafana** — full **LGTM** stack.
+Metrics:
+<img width="1914" height="893" alt="image" src="https://github.com/user-attachments/assets/e7067c08-9044-40ca-9636-af09f91c05c6" />
 
+Tracing
+<img width="1914" height="893" alt="image" src="https://github.com/user-attachments/assets/4e9af412-9dd6-44f2-9a60-0cc80b803f21" />
+
+Logging
+<img width="1914" height="893" alt="image" src="https://github.com/user-attachments/assets/9505660e-1dcf-4421-ac00-6309ed0802c2" />
 ```
 ┌────────────┐    OTLP     ┌──────────┐    ┌──────────────┐    ┌─────────┐
 │ Claude Code│ ──────────▶ │  Alloy   │ ─▶ │ Mimir        │ ─▶ │ Grafana │
