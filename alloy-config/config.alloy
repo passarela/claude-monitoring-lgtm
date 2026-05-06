@@ -1,0 +1,107 @@
+// Level log - Alloy
+logging {
+  level  = "info"
+  format = "logfmt"
+}
+
+// OTLP Receiver
+otelcol.receiver.otlp "default" {
+  grpc {
+    endpoint = "0.0.0.0:4317"
+  }
+  http {
+    endpoint = "0.0.0.0:4318"
+  }
+
+  output {
+    metrics = [otelcol.processor.memory_limiter.default.input]
+    logs    = [otelcol.processor.memory_limiter.default.input]
+    traces  = [otelcol.processor.memory_limiter.default.input]
+  }
+}
+
+// Memory Limiter
+otelcol.processor.memory_limiter "default" {
+  check_interval = "1s"
+  limit          = "512MiB"
+
+  output {
+    metrics = [otelcol.processor.batch.default.input]
+    logs    = [otelcol.processor.batch.default.input]
+    traces  = [otelcol.processor.batch.default.input]
+  }
+}
+
+// Batch Processor
+otelcol.processor.batch "default" {
+  timeout         = "1s"
+  send_batch_size = 1024
+
+  output {
+    metrics = [
+      otelcol.processor.deltatocumulative.default.input,
+      otelcol.exporter.debug.default.input,
+    ]
+    logs = [
+      otelcol.exporter.loki.default.input,
+      otelcol.exporter.debug.default.input,
+    ]
+    traces = [
+      otelcol.exporter.otlp.tempo.input,
+      otelcol.exporter.debug.default.input,
+    ]
+  }
+}
+
+// Delta -> Cumulative
+// Claude Code envia métricas com AggregationTemporality=Delta,
+// mas o Mimir (e Prometheus) só aceita Cumulative. Este processor faz a conversão.
+// https://github.com/anthropics/claude-code/issues/15417#issuecomment-3716620799
+otelcol.processor.deltatocumulative "default" {
+  max_stale = "5m"
+
+  output {
+    metrics = [otelcol.exporter.prometheus.default.input]
+  }
+}
+
+// Prometheus Exporter
+// Alloy recebe métricas de telemetria do Claude e envia via Remote Write para o Mimir
+otelcol.exporter.prometheus "default" {
+  forward_to = [prometheus.remote_write.mimir.receiver]
+}
+
+prometheus.remote_write "mimir" {
+  endpoint {
+    url = "http://mimir:9009/api/v1/push"
+  }
+}
+
+// Tempo Exporter (traces via OTLP gRPC)
+otelcol.exporter.otlp "tempo" {
+  client {
+    endpoint = "tempo:4317"
+    tls {
+      insecure = true
+    }
+  }
+}
+
+// Loki Exporter
+// Converte logs OTLP para o formato Loki e encaminha para loki.write
+otelcol.exporter.loki "default" {
+  forward_to = [loki.write.loki.receiver]
+}
+
+loki.write "loki" {
+  endpoint {
+    url = "http://loki:3100/loki/api/v1/push"
+  }
+}
+
+// Debug Exporter
+otelcol.exporter.debug "default" {
+  verbosity           = "detailed"
+  sampling_initial    = 5
+  sampling_thereafter = 200
+}

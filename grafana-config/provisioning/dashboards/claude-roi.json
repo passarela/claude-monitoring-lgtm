@@ -1,0 +1,460 @@
+{
+  "annotations": {
+    "list": [
+      {
+        "builtIn": 1,
+        "datasource": { "type": "grafana", "uid": "-- Grafana --" },
+        "enable": true,
+        "hide": true,
+        "iconColor": "rgba(0, 211, 255, 1)",
+        "name": "Annotations & Alerts",
+        "type": "dashboard"
+      }
+    ]
+  },
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 1,
+  "id": null,
+  "liveNow": false,
+  "panels": [
+    {
+      "gridPos": { "h": 3, "w": 24, "x": 0, "y": 0 },
+      "id": 1,
+      "options": {
+        "code": { "language": "plaintext", "showLineNumbers": false, "showMiniMap": false },
+        "content": "# Claude Code — ROI Dashboard\n**Análise de custo, eficiência de cache e produtividade.** Filtre por usuário, modelo, source ou **sessão**. Os KPIs e totais respeitam o intervalo de tempo selecionado.",
+        "mode": "markdown"
+      },
+      "pluginVersion": "13.0.1",
+      "targets": [],
+      "title": "",
+      "type": "text"
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "thresholds" },
+          "decimals": 4,
+          "thresholds": { "mode": "absolute", "steps": [{ "color": "green", "value": 0 }, { "color": "yellow", "value": 1 }, { "color": "orange", "value": 5 }, { "color": "red", "value": 20 }] },
+          "unit": "currencyUSD"
+        }
+      },
+      "gridPos": { "h": 5, "w": 4, "x": 0, "y": 3 },
+      "id": 10,
+      "options": { "colorMode": "background", "graphMode": "area", "justifyMode": "auto", "orientation": "auto", "percentChangeColorMode": "standard", "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false }, "showPercentChange": false, "textMode": "auto", "wideLayout": true },
+      "pluginVersion": "13.0.1",
+      "targets": [{ "datasource": { "type": "prometheus", "uid": "prometheus" }, "expr": "sum(last_over_time(claude_code_cost_usage_USD_total{user_email=~\"$user_email\", model=~\"$model\", query_source=~\"$query_source\", session_id=~\"$session_id\"}[$__range]))", "instant": true, "refId": "A" }],
+      "title": "💰 Custo total",
+      "type": "stat"
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "fixedColor": "blue", "mode": "fixed" },
+          "decimals": 0,
+          "thresholds": { "mode": "absolute", "steps": [{ "color": "green", "value": 0 }, { "color": "red", "value": 80 }] },
+          "unit": "short"
+        }
+      },
+      "gridPos": { "h": 5, "w": 4, "x": 4, "y": 3 },
+      "id": 11,
+      "options": { "colorMode": "value", "graphMode": "none", "justifyMode": "auto", "orientation": "auto", "percentChangeColorMode": "standard", "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false }, "showPercentChange": false, "textMode": "auto", "wideLayout": true },
+      "pluginVersion": "13.0.1",
+      "targets": [{ "datasource": { "type": "prometheus", "uid": "prometheus" }, "expr": "sum(last_over_time(claude_code_session_count_total{user_email=~\"$user_email\", session_id=~\"$session_id\"}[$__range]))", "instant": true, "refId": "A" }],
+      "title": "🗨️ Sessões",
+      "type": "stat"
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "fixedColor": "purple", "mode": "fixed" },
+          "decimals": 1,
+          "thresholds": { "mode": "absolute", "steps": [{ "color": "green", "value": 0 }, { "color": "red", "value": 80 }] },
+          "unit": "short"
+        }
+      },
+      "gridPos": { "h": 5, "w": 4, "x": 8, "y": 3 },
+      "id": 12,
+      "options": { "colorMode": "value", "graphMode": "none", "justifyMode": "auto", "orientation": "auto", "percentChangeColorMode": "standard", "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false }, "showPercentChange": false, "textMode": "auto", "wideLayout": true },
+      "pluginVersion": "13.0.1",
+      "targets": [{ "datasource": { "type": "prometheus", "uid": "prometheus" }, "expr": "sum(last_over_time(claude_code_token_usage_tokens_total{user_email=~\"$user_email\", model=~\"$model\", query_source=~\"$query_source\", session_id=~\"$session_id\"}[$__range]))", "instant": true, "refId": "A" }],
+      "title": "🔢 Tokens totais",
+      "type": "stat"
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "description": "% de tokens de input servidos do cache (cacheRead / (input + cacheRead + cacheCreation))",
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "thresholds" },
+          "decimals": 1,
+          "max": 1,
+          "min": 0,
+          "thresholds": { "mode": "absolute", "steps": [{ "color": "red", "value": 0 }, { "color": "orange", "value": 0.3 }, { "color": "yellow", "value": 0.5 }, { "color": "green", "value": 0.7 }] },
+          "unit": "percentunit"
+        }
+      },
+      "gridPos": { "h": 5, "w": 4, "x": 12, "y": 3 },
+      "id": 13,
+      "options": { "colorMode": "background", "graphMode": "none", "justifyMode": "auto", "orientation": "auto", "percentChangeColorMode": "standard", "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false }, "showPercentChange": false, "textMode": "auto", "wideLayout": true },
+      "pluginVersion": "13.0.1",
+      "targets": [{ "datasource": { "type": "prometheus", "uid": "prometheus" }, "expr": "sum(last_over_time(claude_code_token_usage_tokens_total{type=\"cacheRead\", user_email=~\"$user_email\", model=~\"$model\", query_source=~\"$query_source\", session_id=~\"$session_id\"}[$__range])) / sum(last_over_time(claude_code_token_usage_tokens_total{type=~\"input|cacheRead|cacheCreation\", user_email=~\"$user_email\", model=~\"$model\", query_source=~\"$query_source\", session_id=~\"$session_id\"}[$__range]))", "instant": true, "refId": "A" }],
+      "title": "⚡ Cache Hit Rate",
+      "type": "stat"
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "fixedColor": "blue", "mode": "fixed" },
+          "decimals": 4,
+          "thresholds": { "mode": "absolute", "steps": [{ "color": "green", "value": 0 }, { "color": "red", "value": 80 }] },
+          "unit": "currencyUSD"
+        }
+      },
+      "gridPos": { "h": 5, "w": 4, "x": 16, "y": 3 },
+      "id": 14,
+      "options": { "colorMode": "value", "graphMode": "none", "justifyMode": "auto", "orientation": "auto", "percentChangeColorMode": "standard", "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false }, "showPercentChange": false, "textMode": "auto", "wideLayout": true },
+      "pluginVersion": "13.0.1",
+      "targets": [{ "datasource": { "type": "prometheus", "uid": "prometheus" }, "expr": "sum(last_over_time(claude_code_cost_usage_USD_total{user_email=~\"$user_email\", model=~\"$model\", query_source=~\"$query_source\", session_id=~\"$session_id\"}[$__range])) / sum(last_over_time(claude_code_session_count_total{user_email=~\"$user_email\", session_id=~\"$session_id\"}[$__range]))", "instant": true, "refId": "A" }],
+      "title": "💸 Custo / Sessão",
+      "type": "stat"
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "fixedColor": "orange", "mode": "fixed" },
+          "decimals": 2,
+          "thresholds": { "mode": "absolute", "steps": [{ "color": "green", "value": 0 }, { "color": "red", "value": 80 }] },
+          "unit": "currencyUSD"
+        }
+      },
+      "gridPos": { "h": 5, "w": 4, "x": 20, "y": 3 },
+      "id": 15,
+      "options": { "colorMode": "value", "graphMode": "none", "justifyMode": "auto", "orientation": "auto", "percentChangeColorMode": "standard", "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false }, "showPercentChange": false, "textMode": "auto", "wideLayout": true },
+      "pluginVersion": "13.0.1",
+      "targets": [{ "datasource": { "type": "prometheus", "uid": "prometheus" }, "expr": "(sum(last_over_time(claude_code_cost_usage_USD_total{user_email=~\"$user_email\", model=~\"$model\", query_source=~\"$query_source\", session_id=~\"$session_id\"}[$__range])) / sum(last_over_time(claude_code_token_usage_tokens_total{type=\"output\", user_email=~\"$user_email\", model=~\"$model\", query_source=~\"$query_source\", session_id=~\"$session_id\"}[$__range]))) * 1000000", "instant": true, "refId": "A" }],
+      "title": "📊 Custo / 1M tokens output",
+      "type": "stat"
+    },
+    {
+      "datasource": { "type": "loki", "uid": "loki" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "palette-classic" },
+          "custom": { "axisBorderShow": false, "axisCenteredZero": false, "axisColorMode": "text", "axisLabel": "", "axisPlacement": "auto", "barAlignment": 0, "barWidthFactor": 0.6, "drawStyle": "line", "fillOpacity": 20, "gradientMode": "none", "hideFrom": { "legend": false, "tooltip": false, "viz": false }, "insertNulls": false, "lineInterpolation": "linear", "lineWidth": 2, "pointSize": 5, "scaleDistribution": { "type": "linear" }, "showPoints": "never", "showValues": false, "spanNulls": false, "stacking": { "group": "A", "mode": "normal" }, "thresholdsStyle": { "mode": "off" } },
+          "decimals": 4,
+          "thresholds": { "mode": "absolute", "steps": [{ "color": "green", "value": 0 }, { "color": "red", "value": 80 }] },
+          "unit": "currencyUSD"
+        }
+      },
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 8 },
+      "id": 20,
+      "options": { "annotations": { "clustering": -1, "multiLane": false }, "legend": { "calcs": ["sum", "mean"], "displayMode": "table", "placement": "bottom", "showLegend": true }, "tooltip": { "hideZeros": false, "mode": "multi", "sort": "desc" } },
+      "pluginVersion": "13.0.1",
+      "targets": [{ "datasource": { "type": "loki", "uid": "loki" }, "expr": "sum by (attributes_model) (sum_over_time({service_name=\"claude-code\"} | json | attributes_event_name=`api_request` | attributes_session_id=~\"$session_id\" | unwrap attributes_cost_usd [$__interval]))", "legendFormat": "{{attributes_model}}", "refId": "A" }],
+      "title": "Custo ao longo do tempo (por modelo)",
+      "type": "timeseries"
+    },
+    {
+      "datasource": { "type": "loki", "uid": "loki" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "palette-classic" },
+          "custom": { "axisBorderShow": false, "axisCenteredZero": false, "axisColorMode": "text", "axisLabel": "", "axisPlacement": "auto", "barAlignment": 0, "barWidthFactor": 0.6, "drawStyle": "line", "fillOpacity": 25, "gradientMode": "none", "hideFrom": { "legend": false, "tooltip": false, "viz": false }, "insertNulls": false, "lineInterpolation": "linear", "lineWidth": 2, "pointSize": 5, "scaleDistribution": { "type": "linear" }, "showPoints": "never", "showValues": false, "spanNulls": false, "stacking": { "group": "A", "mode": "normal" }, "thresholdsStyle": { "mode": "off" } },
+          "decimals": 0,
+          "thresholds": { "mode": "absolute", "steps": [{ "color": "green", "value": 0 }, { "color": "red", "value": 80 }] },
+          "unit": "short"
+        },
+        "overrides": [
+          { "matcher": { "id": "byName", "options": "cacheRead" }, "properties": [{ "id": "color", "value": { "fixedColor": "green", "mode": "fixed" } }] },
+          { "matcher": { "id": "byName", "options": "cacheCreation" }, "properties": [{ "id": "color", "value": { "fixedColor": "yellow", "mode": "fixed" } }] },
+          { "matcher": { "id": "byName", "options": "input" }, "properties": [{ "id": "color", "value": { "fixedColor": "blue", "mode": "fixed" } }] },
+          { "matcher": { "id": "byName", "options": "output" }, "properties": [{ "id": "color", "value": { "fixedColor": "purple", "mode": "fixed" } }] }
+        ]
+      },
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 8 },
+      "id": 21,
+      "options": { "annotations": { "clustering": -1, "multiLane": false }, "legend": { "calcs": ["sum"], "displayMode": "table", "placement": "bottom", "showLegend": true }, "tooltip": { "hideZeros": false, "mode": "multi", "sort": "desc" } },
+      "pluginVersion": "13.0.1",
+      "targets": [
+        { "datasource": { "type": "loki", "uid": "loki" }, "expr": "sum(sum_over_time({service_name=\"claude-code\"} | json | attributes_event_name=`api_request` | attributes_session_id=~\"$session_id\" | unwrap attributes_input_tokens [$__interval]))", "legendFormat": "input", "refId": "A" },
+        { "datasource": { "type": "loki", "uid": "loki" }, "expr": "sum(sum_over_time({service_name=\"claude-code\"} | json | attributes_event_name=`api_request` | attributes_session_id=~\"$session_id\" | unwrap attributes_output_tokens [$__interval]))", "legendFormat": "output", "refId": "B" },
+        { "datasource": { "type": "loki", "uid": "loki" }, "expr": "sum(sum_over_time({service_name=\"claude-code\"} | json | attributes_event_name=`api_request` | attributes_session_id=~\"$session_id\" | unwrap attributes_cache_read_tokens [$__interval]))", "legendFormat": "cacheRead", "refId": "C" },
+        { "datasource": { "type": "loki", "uid": "loki" }, "expr": "sum(sum_over_time({service_name=\"claude-code\"} | json | attributes_event_name=`api_request` | attributes_session_id=~\"$session_id\" | unwrap attributes_cache_creation_tokens [$__interval]))", "legendFormat": "cacheCreation", "refId": "D" }
+      ],
+      "title": "Tokens ao longo do tempo (por tipo)",
+      "type": "timeseries"
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "palette-classic" },
+          "custom": { "hideFrom": { "legend": false, "tooltip": false, "viz": false } },
+          "decimals": 4,
+          "unit": "currencyUSD"
+        }
+      },
+      "gridPos": { "h": 8, "w": 8, "x": 0, "y": 16 },
+      "id": 30,
+      "options": { "displayLabels": ["percent"], "legend": { "displayMode": "table", "placement": "right", "showLegend": true, "values": ["value", "percent"] }, "pieType": "donut", "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false }, "sort": "desc", "tooltip": { "hideZeros": false, "mode": "single", "sort": "none" } },
+      "pluginVersion": "13.0.1",
+      "targets": [{ "datasource": { "type": "prometheus", "uid": "prometheus" }, "expr": "sum by (model) (last_over_time(claude_code_cost_usage_USD_total{user_email=~\"$user_email\", model=~\"$model\", query_source=~\"$query_source\", session_id=~\"$session_id\"}[$__range]))", "instant": true, "legendFormat": "{{model}}", "refId": "A" }],
+      "title": "Custo por modelo",
+      "type": "piechart"
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "palette-classic" },
+          "custom": { "hideFrom": { "legend": false, "tooltip": false, "viz": false } },
+          "decimals": 4,
+          "unit": "currencyUSD"
+        }
+      },
+      "gridPos": { "h": 8, "w": 8, "x": 8, "y": 16 },
+      "id": 31,
+      "options": { "displayLabels": ["percent"], "legend": { "displayMode": "table", "placement": "right", "showLegend": true, "values": ["value", "percent"] }, "pieType": "donut", "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false }, "sort": "desc", "tooltip": { "hideZeros": false, "mode": "single", "sort": "none" } },
+      "pluginVersion": "13.0.1",
+      "targets": [{ "datasource": { "type": "prometheus", "uid": "prometheus" }, "expr": "sum by (query_source) (last_over_time(claude_code_cost_usage_USD_total{user_email=~\"$user_email\", model=~\"$model\", query_source=~\"$query_source\", session_id=~\"$session_id\"}[$__range]))", "instant": true, "legendFormat": "{{query_source}}", "refId": "A" }],
+      "title": "Custo por origem (main vs auxiliary)",
+      "type": "piechart"
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "palette-classic" },
+          "custom": { "hideFrom": { "legend": false, "tooltip": false, "viz": false } },
+          "decimals": 0,
+          "unit": "short"
+        }
+      },
+      "gridPos": { "h": 8, "w": 8, "x": 16, "y": 16 },
+      "id": 32,
+      "options": { "displayLabels": ["percent"], "legend": { "displayMode": "table", "placement": "right", "showLegend": true, "values": ["value", "percent"] }, "pieType": "donut", "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false }, "sort": "desc", "tooltip": { "hideZeros": false, "mode": "single", "sort": "none" } },
+      "pluginVersion": "13.0.1",
+      "targets": [{ "datasource": { "type": "prometheus", "uid": "prometheus" }, "expr": "sum by (type) (last_over_time(claude_code_token_usage_tokens_total{user_email=~\"$user_email\", model=~\"$model\", query_source=~\"$query_source\", session_id=~\"$session_id\"}[$__range]))", "instant": true, "legendFormat": "{{type}}", "refId": "A" }],
+      "title": "Tokens por tipo",
+      "type": "piechart"
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "fieldConfig": {
+        "defaults": {
+          "custom": { "align": "auto", "cellOptions": { "type": "auto" }, "footer": { "reducers": [] }, "inspect": false },
+          "thresholds": { "mode": "absolute", "steps": [{ "color": "green", "value": 0 }, { "color": "red", "value": 80 }] }
+        },
+        "overrides": [
+          { "matcher": { "id": "byName", "options": "Custo (USD)" }, "properties": [{ "id": "unit", "value": "currencyUSD" }, { "id": "decimals", "value": 4 }, { "id": "custom.cellOptions", "value": { "mode": "gradient", "type": "color-background" } }, { "id": "color", "value": { "fixedColor": "red", "mode": "continuous-RdYlGr" } }] },
+          { "matcher": { "id": "byName", "options": "Tokens" }, "properties": [{ "id": "unit", "value": "short" }, { "id": "decimals", "value": 0 }] },
+          { "matcher": { "id": "byName", "options": "Sessões" }, "properties": [{ "id": "unit", "value": "short" }, { "id": "decimals", "value": 0 }] },
+          { "matcher": { "id": "byNames", "options": { "mode": "include", "names": ["Custo (USD)", "Tokens", "Sessões"] } }, "properties": [{ "id": "custom.footer.reducers", "value": ["sum"] }] }
+        ]
+      },
+      "gridPos": { "h": 9, "w": 14, "x": 0, "y": 24 },
+      "id": 40,
+      "options": { "cellHeight": "sm", "showHeader": true },
+      "pluginVersion": "13.0.1",
+      "targets": [
+        { "datasource": { "type": "prometheus", "uid": "prometheus" }, "expr": "sum by (user_email) (last_over_time(claude_code_cost_usage_USD_total{user_email=~\"$user_email\", session_id=~\"$session_id\"}[$__range]))", "format": "table", "instant": true, "refId": "A" },
+        { "datasource": { "type": "prometheus", "uid": "prometheus" }, "expr": "sum by (user_email) (last_over_time(claude_code_token_usage_tokens_total{user_email=~\"$user_email\", session_id=~\"$session_id\"}[$__range]))", "format": "table", "instant": true, "refId": "B" },
+        { "datasource": { "type": "prometheus", "uid": "prometheus" }, "expr": "sum by (user_email) (last_over_time(claude_code_session_count_total{user_email=~\"$user_email\", session_id=~\"$session_id\"}[$__range]))", "format": "table", "instant": true, "refId": "C" }
+      ],
+      "title": "Top usuários (custo, tokens, sessões)",
+      "transformations": [
+        { "id": "joinByField", "options": { "byField": "user_email", "mode": "outer" } },
+        { "id": "organize", "options": { "excludeByName": { "Time 1": true, "Time 2": true, "Time 3": true }, "renameByName": { "Value #A": "Custo (USD)", "Value #B": "Tokens", "Value #C": "Sessões", "user_email": "Usuário" } } },
+        { "id": "sortBy", "options": { "fields": [], "sort": [{ "desc": true, "field": "Custo (USD)" }] } }
+      ],
+      "type": "table"
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "continuous-GrYlRd" },
+          "decimals": 4,
+          "thresholds": { "mode": "absolute", "steps": [{ "color": "green", "value": 0 }, { "color": "red", "value": 80 }] },
+          "unit": "currencyUSD"
+        }
+      },
+      "gridPos": { "h": 9, "w": 10, "x": 14, "y": 24 },
+      "id": 41,
+      "options": { "displayMode": "gradient", "legend": { "calcs": [], "displayMode": "list", "placement": "bottom", "showLegend": false }, "maxVizHeight": 300, "minVizHeight": 16, "minVizWidth": 8, "namePlacement": "auto", "orientation": "horizontal", "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false }, "showUnfilled": true, "sizing": "auto", "valueMode": "color" },
+      "pluginVersion": "13.0.1",
+      "targets": [{ "datasource": { "type": "prometheus", "uid": "prometheus" }, "expr": "sum by (user_email) (last_over_time(claude_code_cost_usage_USD_total{user_email=~\"$user_email\", session_id=~\"$session_id\"}[$__range]))", "instant": true, "legendFormat": "{{user_email}}", "refId": "A" }],
+      "title": "Custo por usuário",
+      "type": "bargauge"
+    },
+    {
+      "datasource": { "type": "loki", "uid": "loki" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "thresholds" },
+          "custom": { "axisBorderShow": false, "axisCenteredZero": false, "axisColorMode": "text", "axisLabel": "", "axisPlacement": "auto", "barAlignment": 0, "barWidthFactor": 0.6, "drawStyle": "line", "fillOpacity": 30, "gradientMode": "none", "hideFrom": { "legend": false, "tooltip": false, "viz": false }, "insertNulls": false, "lineInterpolation": "linear", "lineWidth": 2, "pointSize": 5, "scaleDistribution": { "type": "linear" }, "showPoints": "auto", "showValues": false, "spanNulls": false, "stacking": { "group": "A", "mode": "none" }, "thresholdsStyle": { "mode": "area" } },
+          "max": 1,
+          "min": 0,
+          "thresholds": { "mode": "absolute", "steps": [{ "color": "red", "value": 0 }, { "color": "orange", "value": 0.3 }, { "color": "yellow", "value": 0.5 }, { "color": "green", "value": 0.7 }] },
+          "unit": "percentunit"
+        }
+      },
+      "gridPos": { "h": 7, "w": 12, "x": 0, "y": 33 },
+      "id": 50,
+      "options": { "annotations": { "clustering": -1, "multiLane": false }, "legend": { "calcs": [], "displayMode": "list", "placement": "bottom", "showLegend": true }, "tooltip": { "hideZeros": false, "mode": "single", "sort": "none" } },
+      "pluginVersion": "13.0.1",
+      "targets": [{ "datasource": { "type": "loki", "uid": "loki" }, "expr": "sum(sum_over_time({service_name=\"claude-code\"} | json | attributes_event_name=`api_request` | attributes_session_id=~\"$session_id\" | unwrap attributes_cache_read_tokens [$__interval])) / (sum(sum_over_time({service_name=\"claude-code\"} | json | attributes_event_name=`api_request` | attributes_session_id=~\"$session_id\" | unwrap attributes_cache_read_tokens [$__interval])) + sum(sum_over_time({service_name=\"claude-code\"} | json | attributes_event_name=`api_request` | attributes_session_id=~\"$session_id\" | unwrap attributes_input_tokens [$__interval])) + sum(sum_over_time({service_name=\"claude-code\"} | json | attributes_event_name=`api_request` | attributes_session_id=~\"$session_id\" | unwrap attributes_cache_creation_tokens [$__interval])))", "legendFormat": "Cache Hit Rate", "refId": "A" }],
+      "title": "Cache Hit Rate ao longo do tempo",
+      "type": "timeseries"
+    },
+    {
+      "datasource": { "type": "loki", "uid": "loki" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "palette-classic" },
+          "custom": { "axisBorderShow": false, "axisCenteredZero": false, "axisColorMode": "text", "axisLabel": "", "axisPlacement": "auto", "barAlignment": 0, "barWidthFactor": 0.6, "drawStyle": "line", "fillOpacity": 25, "gradientMode": "none", "hideFrom": { "legend": false, "tooltip": false, "viz": false }, "insertNulls": false, "lineInterpolation": "linear", "lineWidth": 2, "pointSize": 5, "scaleDistribution": { "type": "linear" }, "showPoints": "never", "showValues": false, "spanNulls": false, "stacking": { "group": "A", "mode": "none" }, "thresholdsStyle": { "mode": "off" } },
+          "thresholds": { "mode": "absolute", "steps": [{ "color": "green", "value": 0 }, { "color": "red", "value": 80 }] },
+          "unit": "short"
+        },
+        "overrides": [
+          { "matcher": { "id": "byName", "options": "cacheRead (economia)" }, "properties": [{ "id": "color", "value": { "fixedColor": "green", "mode": "fixed" } }] },
+          { "matcher": { "id": "byName", "options": "cacheCreation (custo)" }, "properties": [{ "id": "color", "value": { "fixedColor": "yellow", "mode": "fixed" } }] }
+        ]
+      },
+      "gridPos": { "h": 7, "w": 12, "x": 12, "y": 33 },
+      "id": 51,
+      "options": { "annotations": { "clustering": -1, "multiLane": false }, "legend": { "calcs": ["sum", "mean"], "displayMode": "table", "placement": "bottom", "showLegend": true }, "tooltip": { "hideZeros": false, "mode": "multi", "sort": "none" } },
+      "pluginVersion": "13.0.1",
+      "targets": [
+        { "datasource": { "type": "loki", "uid": "loki" }, "expr": "sum(sum_over_time({service_name=\"claude-code\"} | json | attributes_event_name=`api_request` | attributes_session_id=~\"$session_id\" | unwrap attributes_cache_read_tokens [$__interval]))", "legendFormat": "cacheRead (economia)", "refId": "A" },
+        { "datasource": { "type": "loki", "uid": "loki" }, "expr": "sum(sum_over_time({service_name=\"claude-code\"} | json | attributes_event_name=`api_request` | attributes_session_id=~\"$session_id\" | unwrap attributes_cache_creation_tokens [$__interval]))", "legendFormat": "cacheCreation (custo)", "refId": "B" }
+      ],
+      "title": "Cache: leituras vs criação (tokens/min)",
+      "type": "timeseries"
+    },
+    {
+      "datasource": { "type": "loki", "uid": "loki" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "palette-classic" },
+          "custom": { "axisBorderShow": false, "axisCenteredZero": false, "axisColorMode": "text", "axisLabel": "", "axisPlacement": "auto", "barAlignment": 0, "barWidthFactor": 0.6, "drawStyle": "bars", "fillOpacity": 80, "gradientMode": "none", "hideFrom": { "legend": false, "tooltip": false, "viz": false }, "insertNulls": false, "lineInterpolation": "linear", "lineWidth": 1, "pointSize": 5, "scaleDistribution": { "type": "linear" }, "showPoints": "never", "showValues": false, "spanNulls": false, "stacking": { "group": "A", "mode": "normal" }, "thresholdsStyle": { "mode": "off" } },
+          "thresholds": { "mode": "absolute", "steps": [{ "color": "green", "value": 0 }, { "color": "red", "value": 80 }] },
+          "unit": "short"
+        }
+      },
+      "gridPos": { "h": 7, "w": 24, "x": 0, "y": 40 },
+      "id": 60,
+      "options": { "annotations": { "clustering": -1, "multiLane": false }, "legend": { "calcs": ["sum"], "displayMode": "table", "placement": "right", "showLegend": true }, "tooltip": { "hideZeros": false, "mode": "multi", "sort": "none" } },
+      "pluginVersion": "13.0.1",
+      "targets": [{ "datasource": { "type": "loki", "uid": "loki" }, "expr": "sum by (event_name) (rate({service_name=\"claude-code\"} | json event_name=\"attributes_event_name\", session_id=\"attributes_session_id\" | session_id=~\"$session_id\" [1m])) * 60", "legendFormat": "{{event_name}}", "refId": "A" }],
+      "title": "Eventos por minuto (Loki)",
+      "type": "timeseries"
+    },
+    {
+      "datasource": { "type": "loki", "uid": "loki" },
+      "gridPos": { "h": 13, "w": 24, "x": 0, "y": 47 },
+      "id": 70,
+      "options": { "dedupStrategy": "none", "enableLogDetails": true, "prettifyLogMessage": false, "showCommonLabels": false, "showLabels": false, "showTime": true, "sortOrder": "Descending", "wrapLogMessage": true },
+      "pluginVersion": "13.0.1",
+      "targets": [{ "datasource": { "type": "loki", "uid": "loki" }, "expr": "{service_name=\"claude-code\"}\n| json\n| attributes_user_email=~`${user_email:regex}`\n| attributes_session_id=~`${session_id:regex}`\n| line_format `{{ .attributes_user_email }} | {{ .attributes_event_name }} | {{ .attributes_model }} | in={{ .attributes_input_tokens }} out={{ .attributes_output_tokens }} | {{ .attributes_duration_ms }}ms | cost={{ .attributes_cost_usd }} | session={{ .attributes_session_id }}`", "refId": "A" }],
+      "title": "Eventos recentes (Loki)",
+      "type": "logs"
+    }
+  ],
+  "preload": false,
+  "refresh": "30s",
+  "schemaVersion": 42,
+  "tags": ["claude", "roi", "cost", "ai"],
+  "templating": {
+    "list": [
+      {
+        "allValue": ".*",
+        "allowCustomValue": true,
+        "current": { "text": "All", "value": "$__all" },
+        "datasource": { "type": "prometheus", "uid": "prometheus" },
+        "hide": 0,
+        "includeAll": true,
+        "label": "User",
+        "multi": true,
+        "name": "user_email",
+        "options": [],
+        "query": "label_values(claude_code_token_usage_tokens_total, user_email)",
+        "refresh": 2,
+        "regex": "",
+        "regexApplyTo": "value",
+        "skipUrlSync": false,
+        "sort": 0,
+        "type": "query"
+      },
+      {
+        "allValue": ".*",
+        "allowCustomValue": true,
+        "current": { "text": "All", "value": "$__all" },
+        "datasource": { "type": "prometheus", "uid": "prometheus" },
+        "hide": 0,
+        "includeAll": true,
+        "label": "Model",
+        "multi": true,
+        "name": "model",
+        "options": [],
+        "query": "label_values(claude_code_token_usage_tokens_total, model)",
+        "refresh": 2,
+        "regex": "",
+        "regexApplyTo": "value",
+        "skipUrlSync": false,
+        "sort": 0,
+        "type": "query"
+      },
+      {
+        "allValue": ".*",
+        "allowCustomValue": true,
+        "current": { "text": "All", "value": "$__all" },
+        "datasource": { "type": "prometheus", "uid": "prometheus" },
+        "hide": 0,
+        "includeAll": true,
+        "label": "Source",
+        "multi": true,
+        "name": "query_source",
+        "options": [],
+        "query": "label_values(claude_code_token_usage_tokens_total, query_source)",
+        "refresh": 2,
+        "regex": "",
+        "regexApplyTo": "value",
+        "skipUrlSync": false,
+        "sort": 0,
+        "type": "query"
+      },
+      {
+        "allValue": ".*",
+        "allowCustomValue": true,
+        "current": { "text": "All", "value": "$__all" },
+        "datasource": { "type": "prometheus", "uid": "prometheus" },
+        "hide": 0,
+        "includeAll": true,
+        "label": "Session",
+        "multi": true,
+        "name": "session_id",
+        "options": [],
+        "query": "label_values(claude_code_token_usage_tokens_total, session_id)",
+        "refresh": 2,
+        "regex": "",
+        "regexApplyTo": "value",
+        "skipUrlSync": false,
+        "sort": 0,
+        "type": "query"
+      }
+    ]
+  },
+  "time": { "from": "now-24h", "to": "now" },
+  "timepicker": { "refresh_intervals": ["5s", "10s", "30s", "1m", "5m", "15m", "30m", "1h"] },
+  "timezone": "browser",
+  "title": "Claude Code — ROI & Usage",
+  "uid": "claude-roi"
+}
